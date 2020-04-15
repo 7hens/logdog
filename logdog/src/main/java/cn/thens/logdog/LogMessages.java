@@ -10,47 +10,31 @@ import java.util.Arrays;
 /**
  * @author 7hens
  */
-@SuppressWarnings("NullableProblems")
 public final class LogMessages {
     private static final int LRU_CACHE_MAX_SIZE = 256;
     private static LruCache<String, Long> timers = new LruCache<>(LRU_CACHE_MAX_SIZE);
     private static LruCache<String, Long> counters = new LruCache<>(LRU_CACHE_MAX_SIZE);
 
-    public static Object time(final String name) {
-        return new Object() {
-            @Override
-            public String toString() {
-                long now = SystemClock.elapsedRealtime();
-                Long lastTime = timers.get(name);
-                if (lastTime == null) lastTime = 0L;
-                timers.put(name, now);
-                return "time(" + name + "): " + (now - lastTime) + "ms";
-            }
-        };
+    public static String time(final String name) {
+        long now = SystemClock.elapsedRealtime();
+        Long lastTime = timers.get(name);
+        if (lastTime == null) lastTime = 0L;
+        timers.put(name, now);
+        return "time(" + name + "): " + (now - lastTime) + "ms";
     }
 
-    public static Object count(final String name) {
-        return new Object() {
-            @Override
-            public String toString() {
-                Long lastCount = counters.get(name);
-                if (lastCount == null) lastCount = 0L;
-                counters.put(name, lastCount + 1);
-                return "count(" + name + "): " + (lastCount + 1);
-            }
-        };
+    public static String count(final String name) {
+        Long lastCount = counters.get(name);
+        if (lastCount == null) lastCount = 0L;
+        counters.put(name, lastCount + 1);
+        return "count(" + name + "): " + (lastCount + 1);
     }
 
-    public static Object memory() {
-        return new Object() {
-            @Override
-            public String toString() {
-                Runtime runtime = Runtime.getRuntime();
-                return "total memory: " + (runtime.totalMemory() / 1024) + "KB"
-                        + "\nfree memory: " + (runtime.freeMemory() / 1024) + "KB"
-                        + "\nmax memory: " + (runtime.maxMemory() / 1024) + "KB";
-            }
-        };
+    public static String memory() {
+        Runtime runtime = Runtime.getRuntime();
+        return "total memory: " + (runtime.totalMemory() / 1024) + "KB"
+                + "\nfree memory: " + (runtime.freeMemory() / 1024) + "KB"
+                + "\nmax memory: " + (runtime.maxMemory() / 1024) + "KB";
     }
 
     public static String of(Object obj) {
