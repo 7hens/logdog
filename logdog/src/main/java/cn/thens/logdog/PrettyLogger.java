@@ -20,6 +20,7 @@ public class PrettyLogger implements Logger {
 
     @Override
     public void log(int priority, String tag, String message) {
+        if (message == null) message = "null";
         Style style = getStyle(priority, tag);
         lineLogger.log(priority, tag, style.top);
         {
@@ -28,19 +29,11 @@ public class PrettyLogger implements Logger {
             int methodCount = getMethodCount(priority, tag);
             int stackOffset = getStackOffset(stackTrace) + methodOffset;
             int headerLineCount = Math.min(methodCount, stackTrace.length - 1 - stackOffset);
-            StringBuilder indent = new StringBuilder();
             for (int i = 0; i < headerLineCount; i++) {
                 int stackIndex = i + stackOffset;
-                StackTraceElement element = stackTrace[stackIndex];
-
-                String className = element.getClassName();
-                className = className.substring(className.lastIndexOf(".") + 1);
-                String stackInfo = className + "." + element.getMethodName()
-                        + " (" + element.getFileName() + ":" + element.getLineNumber() + ")";
-                if (i == 0) stackInfo += " on thread: " + Thread.currentThread().getName();
-
+                String stackInfo = getStackInfo(stackTrace[stackIndex], i == 0);
+                String indent = i == 0 ? "" : "  ";
                 lineLogger.log(priority, tag, style.middle + indent + stackInfo);
-                indent.append("  ");
             }
             if (headerLineCount > 0) {
                 lineLogger.log(priority, tag, style.divider);
@@ -80,6 +73,15 @@ public class PrettyLogger implements Logger {
 
     protected int getMethodOffset(int priority, String tag) {
         return 0;
+    }
+
+    private String getStackInfo(StackTraceElement element, boolean putsThreadInfo) {
+        String className = element.getClassName();
+        className = className.substring(className.lastIndexOf(".") + 1);
+        String stackInfo = className + "." + element.getMethodName()
+                + "(" + element.getFileName() + ":" + element.getLineNumber() + ")";
+        if (putsThreadInfo) stackInfo += " on thread: " + Thread.currentThread().getName();
+        return stackInfo;
     }
 
     private int getStackOffset(StackTraceElement[] stackTrace) {

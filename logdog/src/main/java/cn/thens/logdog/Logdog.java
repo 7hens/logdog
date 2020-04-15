@@ -56,28 +56,7 @@ public class Logdog {
     }
 
     private Logdog log(int priority, Object msg) {
-        logger.log(priority, tag, toString(msg));
+        logger.log(priority, tag, LogMessages.of(msg));
         return this;
-    }
-
-    private static String toString(Object obj) {
-        if (obj == null) return "null";
-        if (obj instanceof String) return (String) obj;
-        if (obj instanceof Throwable) return Log.getStackTraceString((Throwable) obj);
-        if (obj instanceof MessageProvider) {
-            String message = ((MessageProvider) obj).getMessage();
-            return message != null ? message : "null";
-        }
-        if (!obj.getClass().isArray()) return obj.toString();
-        if (obj instanceof boolean[]) return Arrays.toString((boolean[]) obj);
-        if (obj instanceof byte[]) return Arrays.toString((byte[]) obj);
-        if (obj instanceof char[]) return Arrays.toString((char[]) obj);
-        if (obj instanceof short[]) return Arrays.toString((short[]) obj);
-        if (obj instanceof int[]) return Arrays.toString((int[]) obj);
-        if (obj instanceof long[]) return Arrays.toString((long[]) obj);
-        if (obj instanceof float[]) return Arrays.toString((float[]) obj);
-        if (obj instanceof double[]) return Arrays.toString((double[]) obj);
-        if (obj instanceof Object[]) return Arrays.deepToString((Object[]) obj);
-        return obj.toString();
     }
 }
