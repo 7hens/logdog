@@ -2,28 +2,30 @@ package cn.thens.logdog;
 
 import android.util.Log;
 
-import java.util.Arrays;
-
 @SuppressWarnings("SpellCheckingInspection")
 @PrettyLogger.Ignored
-public class Logdog {
-    private static final String DEFAULT_TAG = "@Logdog";
+public final class Logdog {
+    private static final String DEFAULT_TAG = "Logdog";
     private final String tag;
-    private final Logger logger;
+    private final Logger<? super Object> logger;
 
-    private Logdog(String tag, Logger logger) {
+    private Logdog(String tag, Logger<? super Object> logger) {
         this.tag = tag;
         this.logger = logger;
     }
 
-    public static Logdog create(Logger logger) {
+    public static Logdog create(Logger<? super Object> logger) {
         return new Logdog(DEFAULT_TAG, logger);
     }
 
-    private static Logdog INSTANCE = create(new PrettyLogger(Logger.DEFAULT));
+    private static Logdog INSTANCE = create(new PrettyLogger(Logger.LOGCAT));
 
     public static Logdog get() {
         return INSTANCE;
+    }
+
+    public static void setDefaultLogger(Logger<? super Object> logger) {
+        INSTANCE = create(logger);
     }
 
     public Logdog tag(String tag) {
@@ -55,8 +57,8 @@ public class Logdog {
         return log(Log.ASSERT, msg);
     }
 
-    private Logdog log(int priority, Object msg) {
-        logger.log(priority, tag, LogMessages.of(msg));
+    public Logdog log(int priority, Object msg) {
+        logger.log(priority, tag, msg);
         return this;
     }
 }

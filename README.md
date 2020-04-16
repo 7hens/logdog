@@ -21,7 +21,7 @@ implementation 'com.github.thens:logdog:<last_version>'
 Logdog.get().debug("hello")
         .error(new Throwable())
         .wtf(false, "What a Terrible Failure")
-        .debug(LogMessages.memory())
+        .debug(LogMessages.memory(context))
         .debug(LogMessages.count("hello"))
         .debug(LogMessages.count("hello"))
         .warn(LogMessages.time("hello"))
@@ -33,9 +33,10 @@ Logdog.get().debug("hello")
 ```java
 Logdog customLogger = Logdog.create(new PrettyLogger(Logger.DEFAULT) {
     @Override
-    public void log(int priority, String tag, String message) {
-        if (!BuildConfig.DEBUG) return;
-        super.log(priority, tag, message);
+    public void log(int priority, String tag, Object message) {
+        if (BuildConfig.DEBUG || priority >= Log.WARN) {
+            super.log(priority, tag, message);
+        }
     }
 
     @Override
@@ -45,7 +46,7 @@ Logdog customLogger = Logdog.create(new PrettyLogger(Logger.DEFAULT) {
 
     @Override
     protected int getMethodCount(int priority, String tag) {
-        return 1;
+        return 2;
     }
 
     @Override

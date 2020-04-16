@@ -10,17 +10,16 @@ import java.lang.annotation.Target;
 /**
  * @author 7hens
  */
-public class PrettyLogger implements Logger {
+public class PrettyLogger implements Logger<Object> {
     private static final int CHUNK_SIZE = 1024;
-    private final Logger lineLogger;
+    private final Logger<String> lineLogger;
 
-    public PrettyLogger(Logger lineLogger) {
+    public PrettyLogger(Logger<String> lineLogger) {
         this.lineLogger = lineLogger;
     }
 
     @Override
-    public void log(int priority, String tag, String message) {
-        if (message == null) message = "null";
+    public void log(int priority, String tag, Object message) {
         Style style = getStyle(priority, tag);
         lineLogger.log(priority, tag, style.top);
         {
@@ -40,7 +39,9 @@ public class PrettyLogger implements Logger {
             }
         }
         {
-            String[] lines = message.split("\n");
+            String messageText = getMessageText(message);
+            if (messageText == null) messageText = "null";
+            String[] lines = messageText.split("\n");
             for (int lineIndex = 0; lineIndex < lines.length; lineIndex++) {
                 String line = lines[lineIndex];
                 if (line.isEmpty()) {
@@ -75,13 +76,22 @@ public class PrettyLogger implements Logger {
         return 0;
     }
 
+    protected String getMessageText(Object message) {
+        return LogMessages.of(message);
+    }
+
     private String getStackInfo(StackTraceElement element, boolean putsThreadInfo) {
         String className = element.getClassName();
         className = className.substring(className.lastIndexOf(".") + 1);
-        String stackInfo = className + "." + element.getMethodName()
-                + "(" + element.getFileName() + ":" + element.getLineNumber() + ")";
-        if (putsThreadInfo) stackInfo += " on thread: " + Thread.currentThread().getName();
-        return stackInfo;
+
+        StringBuilder result = new StringBuilder()
+                .append(className).append(".").append(element.getMethodName())
+                .append("(").append(element.getFileName()).append(":")
+                .append(element.getLineNumber()).append(")");
+        if (putsThreadInfo) {
+            result.append(" on thread: ").append(Thread.currentThread().getName());
+        }
+        return result.toString();
     }
 
     private int getStackOffset(StackTraceElement[] stackTrace) {

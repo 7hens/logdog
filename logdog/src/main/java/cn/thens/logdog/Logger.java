@@ -5,17 +5,17 @@ import android.util.Log;
 /**
  * @author 7hens
  */
-public interface Logger {
+public interface Logger<T> {
 
-    void log(int priority, String tag, String message);
+    void log(int priority, String tag, T message);
 
-    Logger DEFAULT = new Logger() {
+    Logger<String> LOGCAT = new Logger<String>() {
         private int tagPrefix = 0;
 
         @Override
         public void log(int priority, String tag, String message) {
             tagPrefix = (tagPrefix + 1) % 10;
-            Log.println(priority, tagPrefix + "." + tag, message);
+            Log.println(priority, tagPrefix + "@" + tag, message);
         }
     };
 }

@@ -1,6 +1,7 @@
 package cn.thens.logdog.sample;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,11 +13,12 @@ import cn.thens.logdog.PrettyLogger;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Logdog customLogger = Logdog.create(new PrettyLogger(Logger.DEFAULT) {
+    private Logdog customLogger = Logdog.create(new PrettyLogger(Logger.LOGCAT) {
         @Override
-        public void log(int priority, String tag, String message) {
-            if (!BuildConfig.DEBUG) return;
-            super.log(priority, tag, message);
+        public void log(int priority, String tag, Object message) {
+            if (BuildConfig.DEBUG || priority >= Log.WARN) {
+                super.log(priority, tag, message);
+            }
         }
 
         @Override
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         Logdog.get().debug("hello")
                 .error(new Throwable())
                 .wtf(false, "What a Terrible Failure")
-                .debug(LogMessages.memory())
+                .debug(LogMessages.memory(this))
                 .debug(LogMessages.count("hello"))
                 .debug(LogMessages.count("hello"))
                 .warn(LogMessages.time("hello"))

@@ -1,5 +1,8 @@
 package cn.thens.logdog;
 
+import android.app.ActivityManager;
+import android.content.Context;
+import android.os.Build;
 import android.os.SystemClock;
 import android.util.Log;
 import android.util.LruCache;
@@ -10,31 +13,56 @@ import java.util.Arrays;
 /**
  * @author 7hens
  */
+@SuppressWarnings({"NullableProblems", "ConstantConditions"})
 public final class LogMessages {
     private static final int LRU_CACHE_MAX_SIZE = 256;
     private static LruCache<String, Long> timers = new LruCache<>(LRU_CACHE_MAX_SIZE);
     private static LruCache<String, Long> counters = new LruCache<>(LRU_CACHE_MAX_SIZE);
 
-    public static String time(final String name) {
-        long now = SystemClock.elapsedRealtime();
-        Long lastTime = timers.get(name);
-        if (lastTime == null) lastTime = 0L;
-        timers.put(name, now);
-        return "time(" + name + "): " + (now - lastTime) + "ms";
+    public static Object time(final String name) {
+        return new Object() {
+            @Override
+            public String toString() {
+                long now = SystemClock.elapsedRealtime();
+                Long lastTime = timers.get(name);
+                if (lastTime == null) lastTime = 0L;
+                timers.put(name, now);
+                return "time(" + name + "): " + (now - lastTime) + "ms";
+            }
+        };
     }
 
-    public static String count(final String name) {
-        Long lastCount = counters.get(name);
-        if (lastCount == null) lastCount = 0L;
-        counters.put(name, lastCount + 1);
-        return "count(" + name + "): " + (lastCount + 1);
+    public static Object count(final String name) {
+        return new Object() {
+            @Override
+            public String toString() {
+                Long lastCount = counters.get(name);
+                if (lastCount == null) lastCount = 0L;
+                counters.put(name, lastCount + 1);
+                return "count(" + name + "): " + (lastCount + 1);
+            }
+        };
     }
 
-    public static String memory() {
-        Runtime runtime = Runtime.getRuntime();
-        return "total memory: " + (runtime.totalMemory() / 1024) + "KB"
-                + "\nfree memory: " + (runtime.freeMemory() / 1024) + "KB"
-                + "\nmax memory: " + (runtime.maxMemory() / 1024) + "KB";
+    public static Object memory(Context context) {
+        final Context app = context.getApplicationContext();
+        return new Object() {
+            @Override
+            public String toString() {
+                StringBuilder result = new StringBuilder();
+                ActivityManager activityManager = (ActivityManager) app.getSystemService(Context.ACTIVITY_SERVICE);
+                ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+                activityManager.getMemoryInfo(memoryInfo);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    result.append("total memory: ").append(memoryInfo.totalMem / 1024 / 1024).append(" MB\n");
+                }
+                result.append("avail memory: ").append(memoryInfo.availMem / 1024 / 1024).append(" MB")
+                        .append("\nthreshold: ").append(memoryInfo.threshold / 1024 / 1024).append(" MB")
+                        .append("\nlow memory: ").append(memoryInfo.lowMemory);
+                return result.toString();
+            }
+        };
     }
 
     public static String of(Object obj) {
