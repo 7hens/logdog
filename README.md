@@ -72,7 +72,7 @@ Logdog.setDefaultLogger(yourLogger);
 Or you can create your new customized Logdog.
 
 ```java
-Logdog yourLogdog = Logdog.create(customLogger).tag("CustomLogger");
+Logdog yourLogdog = Logdog.create(yourLogger).tag("CustomLogger");
 ```
 
 ## Output
