@@ -12,7 +12,7 @@ Yet another pretty logger for android.
 last_version: [![jitpack](https://jitpack.io/v/7hens/logdog.svg)](https://jitpack.io/#7hens/logdog)
 
 ```groovy
-implementation 'com.github.thens:logdog:<last_version>'
+implementation 'com.github.7hens:logdog:<last_version>'
 ```
 
 ## Sample usage
