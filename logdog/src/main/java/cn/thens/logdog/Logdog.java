@@ -14,18 +14,18 @@ public final class Logdog {
         this.logger = logger;
     }
 
-    public static Logdog create(Logger<? super Object> logger) {
-        return new Logdog(DEFAULT_TAG, logger);
+    public static Logdog create(String tag, Logger<? super Object> logger) {
+        return new Logdog(tag, logger);
     }
 
-    private static Logdog INSTANCE = create(new PrettyLogger(Logger.LOGCAT));
+    private static Logdog INSTANCE = create(DEFAULT_TAG, new PrettyLogger(Logger.LOGCAT));
 
     public static Logdog get() {
         return INSTANCE;
     }
 
-    public static void setDefaultLogger(Logger<? super Object> logger) {
-        INSTANCE = create(logger);
+    public static void setDefaultInstance(Logdog logdog) {
+        INSTANCE = logdog;
     }
 
     public Logdog tag(String tag) {
@@ -52,7 +52,7 @@ public final class Logdog {
         return log(Log.ERROR, msg);
     }
 
-    public Logdog wtf(boolean sure, Object msg) {
+    public Logdog require(boolean sure, Object msg) {
         if (sure) return this;
         return log(Log.ASSERT, msg);
     }

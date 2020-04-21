@@ -22,7 +22,9 @@ public class PrettyLogger implements Logger<Object> {
     @Override
     public void log(int priority, String tag, Object message) {
         Style style = getStyle(priority, tag);
-        lineLogger.log(priority, tag, style.top);
+        if (!style.top.isEmpty()) {
+            lineLogger.log(priority, tag, style.top);
+        }
 
         int methodCount = getMethodCount(priority, tag);
         if (methodCount > 0) {
@@ -63,7 +65,9 @@ public class PrettyLogger implements Logger<Object> {
             }
         }
 
-        lineLogger.log(priority, tag, style.bottom);
+        if (!style.bottom.isEmpty()) {
+            lineLogger.log(priority, tag, style.bottom);
+        }
     }
 
     protected String getMessageText(Object message) {

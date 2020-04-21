@@ -13,7 +13,7 @@ import cn.thens.logdog.PrettyLogger;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Logdog customLogger = Logdog.create(new PrettyLogger(Logger.LOGCAT) {
+    private Logdog customLogger = Logdog.create("CustomLogger", new PrettyLogger(Logger.LOGCAT) {
         @Override
         public void log(int priority, String tag, Object message) {
             if (BuildConfig.DEBUG || priority >= Log.WARN) {
@@ -54,14 +54,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void testLog() {
+        customLogger.error("hello");
+
         Logdog.get().debug("hello")
                 .error(new Throwable())
-                .wtf(false, "What a Terrible Failure")
+                .require(false, "What a Terrible Failure")
                 .debug(LogMessages.memory(this))
                 .debug(LogMessages.count("hello"))
                 .debug(LogMessages.count("hello"))
                 .warn(LogMessages.time("hello"))
                 .warn(LogMessages.time("hello"));
-        customLogger.tag("CustomLogger").error("hello");
     }
 }
