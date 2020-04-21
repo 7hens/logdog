@@ -19,12 +19,12 @@ implementation 'com.github.7hens:logdog:<last_version>'
 ```java
 Logdog.get().debug("hello")
         .error(new Throwable())
-        .require(false, "What a Terrible Failure")
-        .debug(LogMessages.memory(context))
+        .debug(LogMessages.memory(this))
         .debug(LogMessages.count("hello"))
         .debug(LogMessages.count("hello"))
         .warn(LogMessages.time("hello"))
-        .warn(LogMessages.time("hello"));
+        .warn(LogMessages.time("hello"))
+        .onlyIf(BuildConfig.DEBUG).wtf("What a Terrible Failure");
 ```
 
 ## Advanced
@@ -96,37 +96,37 @@ E/2@Logdog: ║ 	at java.lang.reflect.Method.invoke(Native Method)
 E/3@Logdog: ║ 	at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:745)
 E/4@Logdog: ║ 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:635)
 E/5@Logdog: ╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-A/6@Logdog: ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-A/7@Logdog: ║ MainActivity.testLog(MainActivity.java:61) on thread: main
-A/8@Logdog: ╟┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
-A/9@Logdog: ║ What a Terrible Failure
-A/0@Logdog: ╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-D/1@Logdog: ┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-D/2@Logdog: │ MainActivity.testLog(MainActivity.java:62) on thread: main
-D/3@Logdog: ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
-D/4@Logdog: │ total memory: 3035 MB
-D/5@Logdog: │ avail memory: 2621 MB
-D/6@Logdog: │ threshold: 144 MB
-D/7@Logdog: │ low memory: false
+D/6@Logdog: ┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+D/7@Logdog: │ MainActivity.testLog(MainActivity.java:61) on thread: main
+D/8@Logdog: ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+D/9@Logdog: │ total memory: 3035 MB
+D/0@Logdog: │ avail memory: 2617 MB
+D/1@Logdog: │ threshold: 144 MB
+D/2@Logdog: │ low memory: false
+D/3@Logdog: └────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+D/4@Logdog: ┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+D/5@Logdog: │ MainActivity.testLog(MainActivity.java:62) on thread: main
+D/6@Logdog: ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+D/7@Logdog: │ count(hello): 1
 D/8@Logdog: └────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 D/9@Logdog: ┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 D/0@Logdog: │ MainActivity.testLog(MainActivity.java:63) on thread: main
 D/1@Logdog: ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
-D/2@Logdog: │ count(hello): 1
+D/2@Logdog: │ count(hello): 2
 D/3@Logdog: └────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-D/4@Logdog: ┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-D/5@Logdog: │ MainActivity.testLog(MainActivity.java:64) on thread: main
-D/6@Logdog: ├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
-D/7@Logdog: │ count(hello): 2
-D/8@Logdog: └────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+W/4@Logdog: ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+W/5@Logdog: ║ MainActivity.testLog(MainActivity.java:64) on thread: main
+W/6@Logdog: ╟┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+W/7@Logdog: ║ time(hello): 360946482ms
+W/8@Logdog: ╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 W/9@Logdog: ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 W/0@Logdog: ║ MainActivity.testLog(MainActivity.java:65) on thread: main
 W/1@Logdog: ╟┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
-W/2@Logdog: ║ time(hello): 333347724ms
+W/2@Logdog: ║ time(hello): 1ms
 W/3@Logdog: ╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-W/4@Logdog: ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-W/5@Logdog: ║ MainActivity.testLog(MainActivity.java:66) on thread: main
-W/6@Logdog: ╟┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
-W/7@Logdog: ║ time(hello): 0ms
-W/8@Logdog: ╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+A/4@Logdog: ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+A/5@Logdog: ║ MainActivity.testLog(MainActivity.java:66) on thread: main
+A/6@Logdog: ╟┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+A/7@Logdog: ║ What a Terrible Failure
+A/8@Logdog: ╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 ```

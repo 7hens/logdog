@@ -18,4 +18,10 @@ public interface Logger<T> {
             Log.println(priority, tagPrefix + "@" + tag, message);
         }
     };
+
+    Logger<Object> EMPTY = new Logger<Object>() {
+        @Override
+        public void log(int priority, String tag, Object message) {
+        }
+    };
 }

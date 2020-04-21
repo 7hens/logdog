@@ -58,11 +58,11 @@ public class MainActivity extends AppCompatActivity {
 
         Logdog.get().debug("hello")
                 .error(new Throwable())
-                .require(false, "What a Terrible Failure")
                 .debug(LogMessages.memory(this))
                 .debug(LogMessages.count("hello"))
                 .debug(LogMessages.count("hello"))
                 .warn(LogMessages.time("hello"))
-                .warn(LogMessages.time("hello"));
+                .warn(LogMessages.time("hello"))
+                .onlyIf(BuildConfig.DEBUG).wtf("What a Terrible Failure");
     }
 }

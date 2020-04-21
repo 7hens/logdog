@@ -18,18 +18,23 @@ public final class Logdog {
         return new Logdog(tag, logger);
     }
 
-    private static Logdog INSTANCE = create(DEFAULT_TAG, new PrettyLogger(Logger.LOGCAT));
+    private static Logdog DEFAULT = create(DEFAULT_TAG, new PrettyLogger(Logger.LOGCAT));
+    private static Logdog EMPTY = create(DEFAULT_TAG, Logger.EMPTY);
 
     public static Logdog get() {
-        return INSTANCE;
+        return DEFAULT;
     }
 
     public static void setDefaultInstance(Logdog logdog) {
-        INSTANCE = logdog;
+        DEFAULT = logdog;
     }
 
     public Logdog tag(String tag) {
         return new Logdog(tag, logger);
+    }
+
+    public Logdog onlyIf(final boolean sure) {
+        return sure ? this : EMPTY;
     }
 
     public Logdog verbose(Object msg) {
@@ -52,8 +57,7 @@ public final class Logdog {
         return log(Log.ERROR, msg);
     }
 
-    public Logdog require(boolean sure, Object msg) {
-        if (sure) return this;
+    public Logdog wtf(Object msg) {
         return log(Log.ASSERT, msg);
     }
 
