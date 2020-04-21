@@ -17,23 +17,26 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void log(int priority, String tag, Object message) {
             if (BuildConfig.DEBUG || priority >= Log.WARN) {
-                super.log(priority, tag, message);
+                StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+                int stackOffset = getStackOffset(priority, tag, stackTrace);
+                String traceInfo = getStackInfo(stackTrace[stackOffset]);
+                super.log(priority, tag, traceInfo + " " + getMessageText(message));
             }
         }
 
         @Override
         protected Style getStyle(int priority, String tag) {
-            return Style.SINGLE;
+            return Style.NONE;
         }
 
         @Override
         protected int getMethodCount(int priority, String tag) {
-            return 2;
+            return 0;
         }
 
         @Override
-        protected int getMethodOffset(int priority, String tag) {
-            return 1;
+        protected int getStackOffset(int priority, String tag, StackTraceElement[] stackTrace) {
+            return super.getStackOffset(priority, tag, stackTrace) + 1;
         }
     });
 

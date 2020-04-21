@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
 /**
  * @author 7hens
  */
+@SuppressWarnings("WeakerAccess")
 public class PrettyLogger implements Logger<Object> {
     private static final int CHUNK_SIZE = 1024;
     private final Logger<String> lineLogger;
@@ -22,15 +23,16 @@ public class PrettyLogger implements Logger<Object> {
     public void log(int priority, String tag, Object message) {
         Style style = getStyle(priority, tag);
         lineLogger.log(priority, tag, style.top);
-        {
+
+        int methodCount = getMethodCount(priority, tag);
+        if (methodCount > 0) {
             StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-            int methodOffset = getMethodOffset(priority, tag);
-            int methodCount = getMethodCount(priority, tag);
-            int stackOffset = getStackOffset(stackTrace) + methodOffset;
+            int stackOffset = getStackOffset(priority, tag, stackTrace);
             int headerLineCount = Math.min(methodCount, stackTrace.length - 1 - stackOffset);
             for (int i = 0; i < headerLineCount; i++) {
                 int stackIndex = i + stackOffset;
-                String stackInfo = getStackInfo(stackTrace[stackIndex], i == 0);
+                String stackInfo = getStackInfo(stackTrace[stackIndex]);
+                if (i == 0) stackInfo += " on thread: " + Thread.currentThread().getName();
                 String indent = i == 0 ? "" : "  ";
                 lineLogger.log(priority, tag, style.middle + indent + stackInfo);
             }
@@ -38,30 +40,34 @@ public class PrettyLogger implements Logger<Object> {
                 lineLogger.log(priority, tag, style.divider);
             }
         }
-        {
-            String messageText = getMessageText(message);
-            if (messageText == null) messageText = "null";
-            String[] lines = messageText.split("\n");
-            for (int lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-                String line = lines[lineIndex];
-                if (line.isEmpty()) {
-                    if (lineIndex != lines.length - 1) {
-                        lineLogger.log(priority, tag, style.middle);
-                    }
-                    break;
+
+        String messageText = getMessageText(message);
+        if (messageText == null) messageText = "null";
+        String[] lines = messageText.split("\n");
+        for (int lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+            String line = lines[lineIndex];
+            if (line.isEmpty()) {
+                if (lineIndex != lines.length - 1) {
+                    lineLogger.log(priority, tag, style.middle);
                 }
-                int lineLength = line.length();
-                int chunkSize = CHUNK_SIZE;
-                int pageSize = (lineLength - 1) / chunkSize + 1;
-                for (int pageIndex = 0; pageIndex < pageSize; pageIndex++) {
-                    int offset = pageIndex * chunkSize;
-                    int count = Math.min(lineLength - offset, chunkSize);
-                    String chunk = line.substring(offset, offset + count);
-                    lineLogger.log(priority, tag, pageIndex == 0 ? style.middle + chunk : chunk);
-                }
+                continue;
+            }
+            int lineLength = line.length();
+            int chunkSize = CHUNK_SIZE;
+            int pageSize = (lineLength - 1) / chunkSize + 1;
+            for (int pageIndex = 0; pageIndex < pageSize; pageIndex++) {
+                int offset = pageIndex * chunkSize;
+                int count = Math.min(lineLength - offset, chunkSize);
+                String chunk = line.substring(offset, offset + count);
+                lineLogger.log(priority, tag, pageIndex == 0 ? style.middle + chunk : chunk);
             }
         }
+
         lineLogger.log(priority, tag, style.bottom);
+    }
+
+    protected String getMessageText(Object message) {
+        return LogMessages.of(message);
     }
 
     protected Style getStyle(int priority, String tag) {
@@ -72,29 +78,7 @@ public class PrettyLogger implements Logger<Object> {
         return 1;
     }
 
-    protected int getMethodOffset(int priority, String tag) {
-        return 0;
-    }
-
-    protected String getMessageText(Object message) {
-        return LogMessages.of(message);
-    }
-
-    private String getStackInfo(StackTraceElement element, boolean putsThreadInfo) {
-        String className = element.getClassName();
-        className = className.substring(className.lastIndexOf(".") + 1);
-
-        StringBuilder result = new StringBuilder()
-                .append(className).append(".").append(element.getMethodName())
-                .append("(").append(element.getFileName()).append(":")
-                .append(element.getLineNumber()).append(")");
-        if (putsThreadInfo) {
-            result.append(" on thread: ").append(Thread.currentThread().getName());
-        }
-        return result.toString();
-    }
-
-    private int getStackOffset(StackTraceElement[] stackTrace) {
+    protected int getStackOffset(int priority, String tag, StackTraceElement[] stackTrace) {
         boolean isInOffsetClass = false;
         for (int i = 0; i < stackTrace.length; i++) {
             StackTraceElement traceElement = stackTrace[i];
@@ -112,11 +96,20 @@ public class PrettyLogger implements Logger<Object> {
         return 0;
     }
 
+    protected String getStackInfo(StackTraceElement element) {
+        String className = element.getClassName();
+        className = className.substring(className.lastIndexOf(".") + 1);
+        return className + "." + element.getMethodName() +
+                "(" + element.getFileName() + ":" +
+                element.getLineNumber() + ")";
+    }
+
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
     public @interface Ignored {
     }
 
+    @SuppressWarnings("WeakerAccess")
     public static class Style {
         private static final String EMPTY = "";
         private static final String SINGLE_PART = "────────────────────────────";
@@ -137,10 +130,10 @@ public class PrettyLogger implements Logger<Object> {
         public static final Style DOUBLE = new Style(DOUBLE_TOP, DOUBLE_DIV, DOUBLE_MID, DOUBLE_BOT);
         public static final Style NONE = new Style(EMPTY, EMPTY, EMPTY, EMPTY);
 
-        final String top;
-        final String divider;
-        final String middle;
-        final String bottom;
+        public final String top;
+        public final String divider;
+        public final String middle;
+        public final String bottom;
 
         public Style(String top, String divider, String middle, String bottom) {
             this.top = top;
