@@ -33,7 +33,7 @@ You can customize a logger as you want.
 
 ```java
 Logdog yourLogdog = Logdog.tag("CustomLogger").logger(new PrettyLogger(Logger.LOGCAT) {
-    ,,Override
+    @Override
     public void log(int priority, String tag, Object message) {
         if (BuildConfig.DEBUG || priority >= Log.WARN) {
             StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
@@ -43,17 +43,17 @@ Logdog yourLogdog = Logdog.tag("CustomLogger").logger(new PrettyLogger(Logger.LO
         }
     }
 
-    ,,Override
+    @Override
     protected Style getStyle(int priority, String tag) {
         return Style.NONE;
     }
 
-    ,,Override
+    @Override
     protected int getMethodCount(int priority, String tag) {
         return 0;
     }
 
-    ,,Override
+    @Override
     protected int getStackOffset(int priority, String tag, StackTraceElement[] stackTrace) {
         return super.getStackOffset(priority, tag, stackTrace) + 1;
     }
