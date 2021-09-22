@@ -16,8 +16,8 @@ import java.util.Arrays;
 @SuppressWarnings({"NullableProblems", "ConstantConditions"})
 public final class LogMessages {
     private static final int LRU_CACHE_MAX_SIZE = 256;
-    private static LruCache<String, Long> timers = new LruCache<>(LRU_CACHE_MAX_SIZE);
-    private static LruCache<String, Long> counters = new LruCache<>(LRU_CACHE_MAX_SIZE);
+    private static final LruCache<String, Long> timers = new LruCache<>(LRU_CACHE_MAX_SIZE);
+    private static final LruCache<String, Long> counters = new LruCache<>(LRU_CACHE_MAX_SIZE);
 
     public static Object time(final String name) {
         return new Object() {

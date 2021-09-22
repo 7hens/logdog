@@ -1,3 +1,2 @@
-rootProject.name='Logdog'
+rootProject.name='logdog'
 include ':sample'
-include ':logdog'

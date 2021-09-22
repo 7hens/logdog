@@ -130,6 +130,7 @@ public class PrettyLogger implements Logger<Object> {
         private static final String DOUBLE_DIV = "╟" + DASHED_LINE;
         private static final String DOUBLE_MID = "║ ";
         private static final String DOUBLE_BOT = "╚" + DOUBLE_LINE;
+
         public static final Style SINGLE = new Style(SINGLE_TOP, SINGLE_DIV, SINGLE_MID, SINGLE_BOT);
         public static final Style DOUBLE = new Style(DOUBLE_TOP, DOUBLE_DIV, DOUBLE_MID, DOUBLE_BOT);
         public static final Style NONE = new Style(EMPTY, EMPTY, EMPTY, EMPTY);

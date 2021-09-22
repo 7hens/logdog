@@ -8,37 +8,39 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import cn.thens.logdog.LogMessages;
 import cn.thens.logdog.Logdog;
-import cn.thens.logdog.Logger;
+import cn.thens.logdog.LogdogX;
+import cn.thens.logdog.Loggers;
 import cn.thens.logdog.PrettyLogger;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Logdog customLogger = Logdog.create("CustomLogger", new PrettyLogger(Logger.LOGCAT) {
-        @Override
-        public void log(int priority, String tag, Object message) {
-            if (BuildConfig.DEBUG || priority >= Log.WARN) {
-                StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-                int stackOffset = getStackOffset(priority, tag, stackTrace);
-                String traceInfo = getStackInfo(stackTrace[stackOffset]);
-                super.log(priority, tag, traceInfo + " " + getMessageText(message));
-            }
-        }
+    private final LogdogX customLogger = Logdog.tag("CustomLogger")
+            .logger(new PrettyLogger(Loggers.logcat()) {
+                @Override
+                public void log(int priority, String tag, Object message) {
+                    if (BuildConfig.DEBUG || priority >= Log.WARN) {
+                        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+                        int stackOffset = getStackOffset(priority, tag, stackTrace);
+                        String traceInfo = getStackInfo(stackTrace[stackOffset]);
+                        super.log(priority, tag, traceInfo + " " + getMessageText(message));
+                    }
+                }
 
-        @Override
-        protected Style getStyle(int priority, String tag) {
-            return Style.NONE;
-        }
+                @Override
+                protected Style getStyle(int priority, String tag) {
+                    return Style.NONE;
+                }
 
-        @Override
-        protected int getMethodCount(int priority, String tag) {
-            return 0;
-        }
+                @Override
+                protected int getMethodCount(int priority, String tag) {
+                    return 0;
+                }
 
-        @Override
-        protected int getStackOffset(int priority, String tag, StackTraceElement[] stackTrace) {
-            return super.getStackOffset(priority, tag, stackTrace) + 1;
-        }
-    });
+                @Override
+                protected int getStackOffset(int priority, String tag, StackTraceElement[] stackTrace) {
+                    return super.getStackOffset(priority, tag, stackTrace) + 1;
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +56,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void testLog() {
-        customLogger.error("hello");
+        customLogger.error("hello\nworld");
 
-        Logdog.get().debug("hello")
+        Logdog.debug("hello")
                 .error(new Throwable())
                 .debug(LogMessages.memory(this))
                 .debug(LogMessages.count("hello"))
