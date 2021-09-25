@@ -1,75 +1,39 @@
-package cn.thens.logdog.sample;
+package cn.thens.logdog.sample
 
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
+import android.os.Bundle
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import cn.thens.logdog.*
 
-import androidx.appcompat.app.AppCompatActivity;
+class MainActivity : AppCompatActivity() {
+    private val customLogger = Logdog
+        .priority(LogPriority.WARN)
+        .strategy(LogStrategy.WARN)
+        .tag("CustomLogger")
+        .logger { priority, tag, message ->
+            Logger.logcat().log(priority, tag,
+                PrettyLogger.getStackInfo() + " " + PrettyLogger.stringOf(message))
+        }
 
-import cn.thens.logdog.LogMessages;
-import cn.thens.logdog.Logdog;
-import cn.thens.logdog.LogdogX;
-import cn.thens.logdog.Loggers;
-import cn.thens.logdog.PrettyLogger;
-
-public class MainActivity extends AppCompatActivity {
-
-    private final Logdog customLogger = Logdog.X.tag("CustomLogger")
-            .logger(new PrettyLogger(Loggers.logcat()) {
-                @Override
-                public void log(int priority, String tag, Object message) {
-                    if (BuildConfig.DEBUG || priority >= Log.WARN) {
-                        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-                        int stackOffset = getStackOffset(priority, tag, stackTrace);
-                        String traceInfo = getStackInfo(stackTrace[stackOffset]);
-                        super.log(priority, tag, traceInfo + " " + getMessageText(message));
-                    }
-                }
-
-                @Override
-                protected Style getStyle(int priority, String tag) {
-                    return Style.NONE;
-                }
-
-                @Override
-                protected int getMethodCount(int priority, String tag) {
-                    return 0;
-                }
-
-                @Override
-                protected int getStackOffset(int priority, String tag, StackTraceElement[] stackTrace) {
-                    return super.getStackOffset(priority, tag, stackTrace) + 1;
-                }
-            });
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        findViewById(android.R.id.content).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                testLog();
-            }
-        });
-        testLog();
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        findViewById<View>(android.R.id.content).setOnClickListener { testLog() }
+        testLog()
     }
 
-    private void testLog() {
-        customLogger.error().log("hello\nworld");
+    private fun testLog() {
+        customLogger { "hello world" }
 
-        Logdog.X.log("hello")
-                .error()
-                .log(new Throwable())
-                .debug()
-                .log(LogMessages.memory(this))
-                .log(LogMessages.count("hello"))
-                .log(LogMessages.count("hello"))
-                .warn()
-                .log(LogMessages.time("hello"))
-                .log(LogMessages.time("hello"))
-                .onlyIf(BuildConfig.DEBUG)
-                .wtf()
-                .log("What a Terrible Failure");
+        Logdog { "hello" }
+            .error { Throwable() }
+            .debug
+            .logMemory(this)
+            .logCount("hello")
+            .logCount("hello")
+            .warn
+            .logTime("hello")
+            .logTime("hello")
+            .requires(!BuildConfig.DEBUG) () { "What a Terrible Failure" }
     }
 }
