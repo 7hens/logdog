@@ -1,12 +1,12 @@
 package cn.thens.logdog;
 
-final class LoggerSys implements Logger<String> {
-    private final Logger<String> out = Loggers.out(System.out);
-    private final Logger<String> err = Loggers.out(System.err);
+final class LoggerSys implements Logger {
+    private final Logger out = Loggers.out(System.out);
+    private final Logger err = Loggers.out(System.err);
 
     @Override
-    public void log(int priority, String tag, String message) {
-        Logger<String> logger = priority >= LogdogX.ERROR ? err : out;
+    public void log(int priority, String tag, Object message) {
+        Logger logger = priority >= Logdog.ERROR ? err : out;
         logger.log(priority, tag, message);
     }
 

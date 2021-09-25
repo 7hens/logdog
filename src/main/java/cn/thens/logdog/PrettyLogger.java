@@ -11,11 +11,11 @@ import java.lang.annotation.Target;
  * @author 7hens
  */
 @SuppressWarnings("WeakerAccess")
-public class PrettyLogger implements Logger<Object> {
+public class PrettyLogger implements Logger {
     private static final int CHUNK_SIZE = 1024;
-    private final Logger<String> lineLogger;
+    private final Logger lineLogger;
 
-    public PrettyLogger(Logger<String> lineLogger) {
+    public PrettyLogger(Logger lineLogger) {
         this.lineLogger = lineLogger;
     }
 

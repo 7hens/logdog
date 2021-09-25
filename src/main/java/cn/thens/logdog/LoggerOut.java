@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-final class LoggerOut implements Logger<String> {
+final class LoggerOut implements Logger {
     private static final String[] priorityTags = new String[]{"", "", "V", "D", "I", "W", "E", "A"};
     private final SimpleDateFormat dateFormat;
     private final PrintStream printer;
@@ -21,7 +21,7 @@ final class LoggerOut implements Logger<String> {
     }
 
     @Override
-    public void log(int priority, String tag, String message) {
+    public void log(int priority, String tag, Object message) {
         String time = dateFormat.format(new Date());
         printer.println(time + " " + getPriorityTag(priority) + ",," + tag + ": " + message);
     }

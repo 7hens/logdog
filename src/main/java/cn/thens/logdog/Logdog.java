@@ -3,47 +3,69 @@ package cn.thens.logdog;
 @SuppressWarnings("SpellCheckingInspection")
 @PrettyLogger.Ignored
 public final class Logdog {
-    private static LogdogX get() {
-        return LogdogX.getDefaultInstance();
+    public static final int ASSERT = 7;
+    public static final int DEBUG = 3;
+    public static final int ERROR = 6;
+    public static final int INFO = 4;
+    public static final int VERBOSE = 2;
+    public static final int WARN = 5;
+
+    private static final String DEFAULT_TAG = "Logdog";
+    public static Logdog X = new Logdog(DEBUG, DEFAULT_TAG, new PrettyLogger(Loggers.logcat()));
+    private static final Logdog EMPTY = new Logdog(DEBUG, DEFAULT_TAG, Loggers.empty());
+
+    private final String tag;
+    private final int priority;
+    private final Logger logger;
+
+    private Logdog(int priority, String tag, Logger logger) {
+        this.priority = priority;
+        this.tag = tag;
+        this.logger = logger;
     }
 
-    public static LogdogX onlyIf(boolean condition) {
-        return get().onlyIf(condition);
+    public Logdog priority(int priority) {
+        return new Logdog(priority, tag, logger);
     }
 
-    public static LogdogX tag(String tag) {
-        return get().tag(tag);
+    public Logdog tag(String tag) {
+        return new Logdog(priority, tag, logger);
     }
 
-    public static LogdogX logger(Logger<? super Object> logger) {
-        return get().logger(logger);
+    public Logdog logger(Logger logger) {
+        return new Logdog(priority, tag, logger);
     }
 
-    public static LogdogX verbose(Object msg) {
-        return get().verbose(msg);
+    public Logdog onlyIf(boolean sure) {
+        return sure ? this : EMPTY;
     }
 
-    public static LogdogX debug(Object msg) {
-        return get().debug(msg);
+    public Logdog verbose() {
+        return priority(VERBOSE);
     }
 
-    public static LogdogX info(Object msg) {
-        return get().info(msg);
+    public Logdog debug() {
+        return priority(DEBUG);
     }
 
-    public static LogdogX warn(Object msg) {
-        return get().warn(msg);
+    public Logdog info() {
+        return priority(INFO);
     }
 
-    public static LogdogX error(Object msg) {
-        return get().error(msg);
+    public Logdog warn() {
+        return priority(WARN);
     }
 
-    public static LogdogX wtf(Object msg) {
-        return get().wtf(msg);
+    public Logdog error() {
+        return priority(ERROR);
     }
 
-    public static LogdogX log(int priority, Object msg) {
-        return get().log(priority, msg);
+    public Logdog wtf() {
+        return priority(ASSERT);
+    }
+
+    public Logdog log(Object msg) {
+        logger.log(priority, tag, msg);
+        return this;
     }
 }
