@@ -1,5 +1,6 @@
 package cn.thens.logdog
 
+// FIXME rename to LogFilter
 fun interface LogStrategy {
     fun isLoggable(priority: LogPriority, tag: String): Boolean
 

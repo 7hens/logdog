@@ -5,11 +5,12 @@ import android.util.Log
 /**
  * @author 7hens
  */
-interface PrettyLogger : Logger {
-    val logger: Logger
-
+class PrettyLogger(
+    private val logger: Logger,
+    private val adapter: StyleAdapter = StyleAdapter.DEFAULT
+) : Logger {
     override fun log(priority: LogPriority, tag: String, message: Any?) {
-        val (borders, stackOffset, stackCount) = getStyle(priority, tag)
+        val (borders, stackOffset, stackCount) = adapter.getStyle(priority, tag)
         if (borders.top.isNotEmpty()) {
             logger.log(priority, tag, borders.top)
         }
@@ -39,7 +40,7 @@ interface PrettyLogger : Logger {
                 continue
             }
             val lineLength = line.length
-            val chunkSize = CHUNK_SIZE
+            val chunkSize = LINE_CHUNK_SIZE
             val pageSize = (lineLength - 1) / chunkSize + 1
             for (pageIndex in 0 until pageSize) {
                 val offset = pageIndex * chunkSize
@@ -53,15 +54,21 @@ interface PrettyLogger : Logger {
         }
     }
 
-    fun getStyle(priority: LogPriority, tag: String): Style {
-        return Style(if (priority > LogPriority.DEBUG) Borders.DOUBLE else Borders.SINGLE)
-    }
-
     data class Style(
         val borders: Borders,
         val stackOffset: Int = 0,
         val stackCount: Int = 1
     )
+
+    fun interface StyleAdapter {
+        fun getStyle(priority: LogPriority, tag: String): Style
+
+        companion object {
+            val DEFAULT = StyleAdapter { p, _ ->
+                Style(if (p >= LogPriority.WARN) Borders.DOUBLE else Borders.SINGLE)
+            }
+        }
+    }
 
     interface Ignored
 
@@ -90,7 +97,7 @@ interface PrettyLogger : Logger {
     }
 
     companion object {
-        private const val CHUNK_SIZE = 1024
+        private const val LINE_CHUNK_SIZE = 1024
 
         fun getStackTraceOffset(stackTrace: Array<StackTraceElement>): Int {
             var isInOffsetClass = false
@@ -121,9 +128,9 @@ interface PrettyLogger : Logger {
                     element.lineNumber + ")"
         }
 
-        fun getStackInfo(): String {
+        fun getStackInfo(offset: Int = 0): String {
             val stackTrace = Thread.currentThread().stackTrace
-            val stackTraceOffset = getStackTraceOffset(stackTrace)
+            val stackTraceOffset = getStackTraceOffset(stackTrace) + offset
             return getStackInfo(stackTrace[stackTraceOffset])
         }
 

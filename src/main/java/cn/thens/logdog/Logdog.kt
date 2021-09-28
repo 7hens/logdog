@@ -37,7 +37,7 @@ interface Logdog : PrettyLogger.Ignored {
         private val priority: LogPriority = LogPriority.DEBUG,
         private val tag: String = "Logdog",
         private val strategy: LogStrategy = LogStrategy.ALL,
-        private val logger: Logger = Logger.logcat().pretty(),
+        private val logger: Logger = PrettyLogger(Logger.logcat()),
     ) : Logdog {
 
         override val isLoggable: Boolean = strategy.isLoggable(priority, tag)

@@ -12,10 +12,11 @@ import java.util.*
 fun interface Logger {
     fun log(priority: LogPriority, tag: String, message: Any?)
 
-    fun pretty(): PrettyLogger {
+    operator fun plus(logger: Logger): Logger {
         val self = this
-        return object : PrettyLogger {
-            override val logger: Logger = self
+        return Logger { priority, tag, message ->
+            self.log(priority, tag, message)
+            logger.log(priority, tag, message)
         }
     }
 
