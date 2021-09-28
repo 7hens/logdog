@@ -36,7 +36,7 @@ You can customize a logger as you want.
 ```kotlin
 val customLogger = Logdog
     .priority(LogPriority.WARN)
-    .strategy(LogStrategy.WARN)
+    .filter(LogFilter.WARN)
     .tag("CustomLogger")
     .logger { priority, tag, message ->
         Logger.logcat().log(priority, tag,
