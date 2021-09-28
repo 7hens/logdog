@@ -42,6 +42,8 @@ val customLogger = Logdog
         Logger.logcat().log(priority, tag,
             PrettyLogger.getStackInfo() + " " + PrettyLogger.stringOf(message))
     }
+
+customLogger { "hello world" }
 ```
 
 ## Output

@@ -6,15 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import cn.thens.logdog.*
 
 class MainActivity : AppCompatActivity() {
-    private val customLogger = Logdog
-        .priority(LogPriority.WARN)
-        .strategy(LogStrategy.WARN)
-        .tag("CustomLogger")
-        .logger { priority, tag, message ->
-            Logger.logcat().log(priority, tag,
-                PrettyLogger.getStackInfo() + " " + PrettyLogger.stringOf(message))
-        }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -23,8 +14,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun testLog() {
-        customLogger { "hello world" }
-
         Logdog { "hello" }
             .error { Throwable() }
             .debug
@@ -34,6 +23,19 @@ class MainActivity : AppCompatActivity() {
             .warn
             .logTime("hello")
             .logTime("hello")
-            .requires(!BuildConfig.DEBUG) () { "What a Terrible Failure" }
+            .requires(!BuildConfig.DEBUG)() { "What a Terrible Failure" }
+
+        val customLogger = Logdog
+            .priority(LogPriority.WARN)
+            .filter(LogFilter.WARN)
+            .tag("CustomLogger")
+            .logger { priority, tag, message ->
+                Logger.logcat().log(
+                    priority, tag,
+                    PrettyLogger.getStackInfo() + " " + PrettyLogger.stringOf(message)
+                )
+            }
+
+        customLogger { "hello world" }
     }
 }

@@ -9,7 +9,7 @@ interface Logdog : PrettyLogger.Ignored {
 
     fun tag(tag: String): Logdog
 
-    fun strategy(strategy: LogStrategy): Logdog
+    fun filter(filter: LogFilter): Logdog
 
     fun logger(logger: Logger): Logdog
 
@@ -25,7 +25,7 @@ interface Logdog : PrettyLogger.Ignored {
 
     val wtf get() = priority(LogPriority.ASSERT)
 
-    val dummy get() = strategy(LogStrategy.NONE)
+    val dummy get() = filter(LogFilter.NONE)
 
     fun requires(sure: Boolean): Logdog {
         return if (sure) dummy else error
@@ -36,26 +36,26 @@ interface Logdog : PrettyLogger.Ignored {
     private class Impl(
         private val priority: LogPriority = LogPriority.DEBUG,
         private val tag: String = "Logdog",
-        private val strategy: LogStrategy = LogStrategy.ALL,
+        private val filter: LogFilter = LogFilter.ALL,
         private val logger: Logger = PrettyLogger(Logger.logcat()),
     ) : Logdog {
 
-        override val isLoggable: Boolean = strategy.isLoggable(priority, tag)
+        override val isLoggable: Boolean = filter.isLoggable(priority, tag)
 
         override fun priority(priority: LogPriority): Logdog {
-            return Impl(priority, tag, strategy, logger)
+            return Impl(priority, tag, filter, logger)
         }
 
         override fun tag(tag: String): Logdog {
-            return Impl(priority, tag, strategy, logger)
+            return Impl(priority, tag, filter, logger)
         }
 
-        override fun strategy(strategy: LogStrategy): Logdog {
-            return Impl(priority, tag, strategy, logger)
+        override fun filter(filter: LogFilter): Logdog {
+            return Impl(priority, tag, filter, logger)
         }
 
         override fun logger(logger: Logger): Logdog {
-            return Impl(priority, tag, strategy, logger)
+            return Impl(priority, tag, filter, logger)
         }
 
         override fun log(msg: Any?): Logdog {
