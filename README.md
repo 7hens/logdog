@@ -26,7 +26,7 @@ Logdog { "hello" }
     .warn
     .logTime("hello")
     .logTime("hello")
-    .requires(!BuildConfig.DEBUG) () { "What a Terrible Failure" }
+    .require(!BuildConfig.DEBUG) { "What a Terrible Failure" }
 ```
 
 ## Advanced

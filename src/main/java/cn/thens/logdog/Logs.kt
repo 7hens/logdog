@@ -19,6 +19,10 @@ inline operator fun Logdog.invoke(crossinline fn: () -> Any?): Logdog {
     return this
 }
 
+inline fun Logdog.require(value: Boolean, crossinline fn: () -> Any?): Logdog {
+    return require(value)(fn)
+}
+
 fun Logdog.logTime(name: String): Logdog {
     return invoke {
         val now = SystemClock.elapsedRealtime()

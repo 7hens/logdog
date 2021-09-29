@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
             .warn
             .logTime("hello")
             .logTime("hello")
-            .requires(!BuildConfig.DEBUG)() { "What a Terrible Failure" }
+            .require(!BuildConfig.DEBUG) { "What a Terrible Failure" }
 
         val customLogger = Logdog
             .priority(LogPriority.WARN)

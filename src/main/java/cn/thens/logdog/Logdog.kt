@@ -3,8 +3,6 @@ package cn.thens.logdog
 interface Logdog : PrettyLogger.Ignored {
     val isLoggable: Boolean
 
-    fun log(msg: Any?): Logdog
-
     fun priority(priority: LogPriority): Logdog
 
     fun tag(tag: String): Logdog
@@ -12,6 +10,8 @@ interface Logdog : PrettyLogger.Ignored {
     fun filter(filter: LogFilter): Logdog
 
     fun logger(logger: Logger): Logdog
+
+    fun log(msg: Any?): Logdog
 
     val verbose get() = priority(LogPriority.VERBOSE)
 
@@ -27,9 +27,15 @@ interface Logdog : PrettyLogger.Ignored {
 
     val dummy get() = filter(LogFilter.NONE)
 
-    fun requires(sure: Boolean): Logdog {
-        return if (sure) dummy else error
+    fun require(value: Boolean): Logdog {
+        return if (value) dummy else error
     }
+
+    @Deprecated("", ReplaceWith("filter(filter)"))
+    fun strategy(filter: LogFilter): Logdog = filter(filter)
+
+    @Deprecated("", ReplaceWith("require(value)"))
+    fun requires(value: Boolean): Logdog = require(value)
 
     companion object X : Logdog by Impl()
 

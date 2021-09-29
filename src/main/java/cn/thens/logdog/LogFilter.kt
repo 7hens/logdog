@@ -15,3 +15,6 @@ fun interface LogFilter {
         val ASSERT = of(LogPriority.ASSERT)
     }
 }
+
+@Deprecated("", ReplaceWith("LogFilter"))
+typealias LogStrategy = LogFilter
